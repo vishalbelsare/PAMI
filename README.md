@@ -91,14 +91,26 @@ PAttern MIning (PAMI) is a Python library containing several algorithms to disco
 ***
 # Recent Updates
 
-- **Version 2024.07.02:** 
+- **Version 2026.07.29:**
 In this latest version, the following updates have been made:
-  - Included one new algorithms, **PrefixSpan**, for Sequential Pattern.
-  - Optimized the following pattern mining algorithms: **PFPGrowth, PFECLAT, GPFgrowth and PPF_DFS**.
-  - Test cases are implemented for the following algorithms, **Contiguous Frequent patterns, Correlated Frequent Patterns, Coverage Frequent Patterns, Fuzzy Correlated Frequent Patterns, Fuzzy Frequent Patterns, Fuzzy Georeferenced Patterns, Georeferenced Frequent Patterns, Periodic Frequent Patterns, Partial Periodic Frequent Patterns, HighUtility Frequent Patterns, HighUtility Patterns, HighUtility Georeferenced Frequent Patterns, Frequent Patterns, Multiple Minimum Frequent Patterns, Periodic Frequent Patterns, Recurring Patterns, Sequential Patterns, Uncertain Frequent Patterns, Weighted Uncertain Frequent Patterns**.
-  - The algorithms mentioned below are automatically tested, **Frequent Patterns, Correlated Frequent Patterns, Contiguous Frequent patterns, Coverage Frequent Patterns, Recurring Patterns, Sequential Patterns**.
+  - Added four new pattern-mining algorithms: **CorrelatedECLAT** (a vertical correlated pattern miner), **FTECLAT** (a vertical fault-tolerant frequent pattern miner), and two new maximal-pattern miners, **GenMax** and **MaxMiner**.
+  - Added CUDA implementations for the fuzzy pattern-mining algorithms **FFIMiner, FPFPMiner, F3PMiner, FCPGrowth, FFSPMiner, and FGPFPMiner**, and for **CMine** (coverage pattern mining).
+  - Fixed a bug in **CMine** where the first item of a transaction was dropped, and optimized its bitset construction.
+  - Made the `plotGraphs()` charts in **TransactionalDatabase** interactive, with hover tooltips showing the item name and value at each point.
+  - Fixed a crash in the `plotGraphs()` method of the database statistics classes, and in the underlying line-graph and pattern-visualization utilities.
+  - Optimized **CoMine, CoMinePlus, FCPGrowth, FPFPMiner, FTApriori, FTFPGrowth, MaxFPGrowth, cuApriori, cuAprioriBit, cuEclat, and cuEclatBit**.
 
-Total number of algorithms: 89
+Total number of algorithms: 134
+
+- **Version 2026.07.01:**
+In this latest version, the following updates have been made:
+  - Added a **k (maximum-cardinality)** parameter to the fuzzy pattern-mining algorithms -- **FFIMiner, FPFPMiner, FFSPMiner, FGPFPMiner, FCPGrowth, and F3PMiner** -- to control how many top fuzzy terms are retained per item during mining. `k=1` (default) keeps only the highest-support term per item, `k=2` keeps the top two, and `k<=0` disables the filter (mines every term).
+  - Added two new visualization utilities for association analysis: an item co-occurrence heatmap and an association-rule scatter plot.
+  - Fixed the lattice traversal in **SpatialECLAT** so that itemsets larger than size 2 are mined correctly.
+  - Optimized the following pattern mining algorithms: **SpatialECLAT, FSPGrowth, ECLAT, ECLATDiffset, FPGrowth, FFIMiner, PFECLAT, GPFgrowth, PPF_DFS, PPP_ECLAT, PPPGrowth, Aprioribitset, ECLATbitset, and PFPGrowth**.
+  - Fixed duplicate mining calls and output-path issues in the command-line entry points of **Apriori, ECLAT, and FPGrowth**.
+
+Total number of algorithms: 123
 
 ***
 # Features
@@ -170,7 +182,7 @@ from PAMI.frequentPattern.basic import FPGrowth as alg
 fileURL = "https://u-aizu.ac.jp/~udayrage/datasets/transactionalDatabases/Transactional_T10I4D100K.csv"
 minSup=300
 obj = alg.FPGrowth(iFile=fileURL, minSup=minSup, sep='\t')
-#obj.mine()  #deprecated
+#obj.startMine()  #deprecated
 obj.mine()
 obj.save('frequentPatternsAtMinSupCount300.txt')
 frequentPatternsDF= obj.getPatternsAsDataFrame()
@@ -443,14 +455,14 @@ We invite and encourage all community members to contribute, report bugs, fix bu
 | WFRIMiner <a target="_blank" href="https://colab.research.google.com/github/UdayLab/PAMI/blob/main/notebooks/weightedFrequentRegularPatterns/basic/WFRI.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/> </a> |
 
 
-#### 4.8. Weighted frequent neighbourhood pattern mining: [Sample](https://github.com/UdayLab/PAMI/blob/main/docs/weightedSpatialFrequentPattern.html)
+#### 4.8. Weighted frequent neighbourhood pattern mining: [Sample](https://udaylab.github.io/PAMI/weightedSpatialFrequentPattern.html)
 
 | Basic       |
 |-------------|
 | SSWFPGrowth |
 
 ### 5. Mining  patterns from fuzzy transactional/temporal/geo-referenced databases
-#### 5.1. Fuzzy Frequent pattern mining: [Sample](https://github.com/UdayLab/PAMI/fuzzyFrequentPatternMining.html)
+#### 5.1. Fuzzy Frequent pattern mining: [Sample](https://udaylab.github.io/PAMI/fuzzyFrequentPatternMining.html)
 
 | Basic                                                                                                                                                                                                                                                   |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -464,19 +476,19 @@ We invite and encourage all community members to contribute, report bugs, fix bu
 | FCP-growth <a target="_blank" href="https://colab.research.google.com/github/UdayLab/PAMI/blob/main/notebooks/fuzzyCorrelatedPattern/basic/FCPGrowth.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/> </a> |
 
 
-#### 5.3. Fuzzy geo-referenced frequent pattern mining: [Sample](https://github.com/UdayLab/PAMI/fuzzyFrequentSpatialPatternMining.html)
+#### 5.3. Fuzzy geo-referenced frequent pattern mining: [Sample](https://udaylab.github.io/PAMI/fuzzyFrequentSpatialPatternMining.html)
 
 | Basic                                                                                                                                                                                                                                                                  |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | FFSP-Miner <a target="_blank" href="https://colab.research.google.com/github/UdayLab/PAMI/blob/main/notebooks/fuzzyGeoreferencedFrequentPattern/basic/FFSPMiner.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/> </a> |
 
-#### 5.4. Fuzzy periodic frequent pattern mining: [Sample](https://github.com/UdayLab/PAMI/fuzzyPeriodicFrequentPatternMining.html)
+#### 5.4. Fuzzy periodic frequent pattern mining: [Sample](https://udaylab.github.io/PAMI/fuzzyPeriodicFrequentPatternMining.html)
 
 | Basic                                                                                                                                                                                                                                                             |
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | FPFP-Miner <a target="_blank" href="https://colab.research.google.com/github/UdayLab/PAMI/blob/main/notebooks/fuzzyPeriodicFrequentPattern/basic/FPFPMiner.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/> </a> |
 
-#### 5.5. Fuzzy geo-referenced periodic frequent pattern mining: [Sample](https://github.com/UdayLab/PAMI/fuzzySpatialPeriodicFrequentPatternMining.html)
+#### 5.5. Fuzzy geo-referenced periodic frequent pattern mining: [Sample](https://udaylab.github.io/PAMI/fuzzySpatialPeriodicFrequentPatternMining.html)
 
 | Basic                                                                                                                                                                                                                                                                                                 |
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -510,7 +522,7 @@ We invite and encourage all community members to contribute, report bugs, fix bu
 
 ### 7. Mining patterns from sequence databases
 
-#### 7.1. Sequence frequent pattern mining: [Sample](https://github.com/UdayLab/PAMI/blob/main/docs/weightedSpatialFrequentPattern.html)
+#### 7.1. Sequence frequent pattern mining: [Sample](https://udaylab.github.io/PAMI/sequentialFrequentPatternMining.html)
     
 | Basic                                                                                                                                                                                                                                                       |
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
